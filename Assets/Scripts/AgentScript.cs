@@ -39,6 +39,7 @@ public class AgentScript : MonoBehaviour
         if (targets.Length > 0)
             currentTarget = targets[targetNumber];
 
+		Debug.Log("Hola!");
     }
 
 
@@ -47,12 +48,15 @@ public class AgentScript : MonoBehaviour
         PatrolBetweenTargets();
         SearchPlayer();
         HandleChase();
-        HandleAnim();
     }
+
+	private void LateUpdate() {
+		HandleAnim();
+	}
 
     void PatrolBetweenTargets()
     {
-        if (!chasing && targets.Length > 0)
+        if (!chasing)
         {
             currentTarget = targets[targetNumber];
             agent.destination = currentTarget.position;
@@ -70,15 +74,17 @@ public class AgentScript : MonoBehaviour
 
     void HandleChase()
     {
-        if (chasing && currentPlayerTarget != null)
+        if (chasing)
         {
             agent.destination = currentPlayerTarget.position;
 
             unseenTimer += Time.deltaTime;
+			//Debug.Log("timer = " + unseenTimer);
+
             if (unseenTimer >= secondsTillAggroDown)
             {
-                Debug.Log("Perdio de vista al jugador");
-                chasing = false;
+                Debug.Log("=========== Perdio de vista al jugador ===========");
+                chasing = false; 
                 targetNumber = GetRandomTargetIndex();
                 currentTarget = targets[targetNumber];
                 agent.destination = currentTarget.position;
@@ -99,7 +105,8 @@ public class AgentScript : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Player"))
                 {
-                    currentPlayerTarget = hit.transform;
+				    Debug.Log("Vio al jugador");
+                    currentPlayerTarget = hit.collider.transform;
                     unseenTimer = 0f;
                     chasing = true;
                 }
